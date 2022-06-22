@@ -1,6 +1,7 @@
 import pygame as pg
 
-
+fpath_desktop = r"C:\Users\norms\PycharmProjects\Textbooks\pygames\impossible_game\pictures"
+fpath_laptop = r"C:\Users\natha\PycharmProjects\pygames\impossible_game\pictures"
 class Player:
     """Player class that player moves around map.
     Attributes:
@@ -18,14 +19,10 @@ class Player:
         self.position = pos
         self.x = pos[0]
         self.y = pos[1]
-        self.up = pg.transform.scale(pg.image.load(r"C:\Users\natha\PycharmProjects\pygames\impossible_game\pictures"
-                                                   r"\up.png"), (30, 30))
-        self.down = pg.transform.scale(pg.image.load(r"C:\Users\natha\PycharmProjects\pygames\impossible_game\pictures"
-                                                     r"\down.png"), (30, 30))
-        self.right = pg.transform.scale(pg.image.load(r"C:\Users\natha\PycharmProjects\pygames\impossible_game\pictures"
-                                                      r"\right.png"), (30, 30))
-        self.left = pg.transform.scale(pg.image.load(r"C:\Users\natha\PycharmProjects\pygames\impossible_game\pictures"
-                                                     r"\left.png"), (30, 30))
+        self.up = pg.transform.scale(pg.image.load(fpath_desktop + r"\up.png"), (30, 30))
+        self.down = pg.transform.scale(pg.image.load(fpath_desktop + r"\down.png"), (30, 30))
+        self.right = pg.transform.scale(pg.image.load(fpath_desktop + r"\right.png"), (30, 30))
+        self.left = pg.transform.scale(pg.image.load(fpath_desktop + r"\left.png"), (30, 30))
         self.rect = self.up.get_rect(center=(self.x, self.y))
         self.state = "up"
         self.blocked = False

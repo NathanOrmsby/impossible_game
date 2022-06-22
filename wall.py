@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 from player import Player
+from opponent import Opponent
 
 
 class Wall:
@@ -33,7 +34,6 @@ class Wall:
         self.right = None
         self.color = (0, 0, 0)
         self.width = 10
-
 
     def determine_state(self):
         """Determines the orientation of the wall
@@ -78,7 +78,7 @@ class Wall:
                 self.left = point2
                 self.right = point1
 
-    def locate_player(self, player_pos): # works for vertical
+    def locate_player(self, player_pos):  # works for vertical
         """Locates player based on orientation and position of wall object.
 
         """
@@ -104,24 +104,41 @@ class Wall:
                 elif player_pos[1] > self.left[1]:
                     self.player_loc = "below"
 
-    def detect_collision(self, player_loc): # BROKEN
-        """Returns true if the player is colliding with a wall. Will be used to call block_player method
+    def detect_player_collision(self, player_loc):
+        """Returns true if the player is colliding with a wall. Will be used to call block_player method.
 
-        """
+        Also contains case for detecting opponent"""
 
         if self.state == "vertical":
             right_buffer = self.top[0] + 2.5
             left_buffer = self.top[0] - 32
-            # print("Player x value: {}. Wall x value: {}" .format(player_loc[0], self.top[0]))
+
             if left_buffer <= player_loc[0] <= right_buffer:
-                print("colliding")
                 return True
 
         elif self.state == "horizontal":
             top_buffer = self.left[1] - 32
             bottom_buffer = self.left[1] + 2.5
             if top_buffer <= player_loc[1] <= bottom_buffer:
-                print("colliding")
+                return True
+
+        return False
+
+    def detect_opponent_collision(self, opponent_loc):
+        """Does same thing as detect_player_collision: Just for opponents."""
+
+        if self.state == "vertical":
+            right_buffer = self.top[0] + 2.5
+            left_buffer = self.top[0] - 32
+
+            if left_buffer <= opponent_loc[0] <= right_buffer:
+                return True
+
+        elif self.state == "horizontal":
+            top_buffer = self.left[1] - 32
+            bottom_buffer = self.left[1] + 2.5
+
+            if top_buffer <= opponent_loc[1] <= bottom_buffer:
                 return True
 
         return False
@@ -146,6 +163,22 @@ class Wall:
                 player_class.y -= 1
             elif self.player_loc == "below":
                 player_class.y += 1
+
+    def bounce_opponent(self, opponent_class):
+        # Vertical wall
+        if self.state == "vertical":
+            # Bounce in opposite direction opponent is moving
+            if opponent_class.direction == "left":
+                opponent_class.direction = "right"
+            elif opponent_class.direction == "right":
+                opponent_class.direction = "left"
+
+        # Horizontal wall
+        if self.state == "horizontal":
+            if opponent_class.direction == "down":
+                opponent_class.direction = "up"
+            elif opponent_class.direction == "up":
+                opponent_class.direction = "down"
 
     def project(self, screen):
         """Projects a drawn line segment that acts as the visual wall to the screen."""
