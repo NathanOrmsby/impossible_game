@@ -85,8 +85,7 @@ class Wall:
 
         # print("Player position: {}" .format(player_pos))
         if self.state == "vertical":
-            # print("Vertical wall")
-            # print("Top: {}. Bottom: {}." .format(self.top, self.bottom))
+
             # Player must be within vertical range of wall
             if self.top[1] <= player_pos[1] <= self.bottom[1]:
                 # Assign player position
@@ -104,42 +103,66 @@ class Wall:
                 elif player_pos[1] > self.left[1]:
                     self.player_loc = "below"
 
-    def detect_player_collision(self, player_loc):
+    def detect_player_collision(self, player_class):
         """Returns true if the player is colliding with a wall. Will be used to call block_player method.
 
         Also contains case for detecting opponent"""
 
         if self.state == "vertical":
             right_buffer = self.top[0] + 2.5
-            left_buffer = self.top[0] - 32
+            left_buffer = self.top[0] - 2.5
 
-            if left_buffer <= player_loc[0] <= right_buffer:
+            # From left
+            if left_buffer <= player_class.r <= self.top[0]:
+                return True
+            # From right
+            if self.top[0] <= player_class.l <= right_buffer:
                 return True
 
         elif self.state == "horizontal":
-            top_buffer = self.left[1] - 32
+            top_buffer = self.left[1] - 2.5
             bottom_buffer = self.left[1] + 2.5
-            if top_buffer <= player_loc[1] <= bottom_buffer:
+
+            # From above
+            if top_buffer <= player_class.b <= self.left[1]:
+                return True
+            # From below
+            if self.left[1] <= player_class.t <= bottom_buffer:
                 return True
 
         return False
 
-    def detect_opponent_collision(self, opponent_loc):
-        """Does same thing as detect_player_collision: Just for opponents."""
+    def detect_opponent_collision(self, opponent_class):
+        """Does same thing as detect_player_collision: Just for opponents.
+
+        Also checks if opponent is in range of wall."""
 
         if self.state == "vertical":
             right_buffer = self.top[0] + 2.5
-            left_buffer = self.top[0] - 32
+            left_buffer = self.top[0] - 2.5
 
-            if left_buffer <= opponent_loc[0] <= right_buffer:
-                return True
+            if self.top[1] <= opponent_class.b and opponent_class.t <= self.bottom[1]:
+                # Coming from left:
+                if opponent_class.direction == "right":
+                    if left_buffer <= opponent_class.r <= self.top[0]:
+                        return True
+                # Coming from right
+                if opponent_class.direction == "left":
+                    if self.top[0] <= opponent_class.l <= right_buffer:
+                        return True
 
         elif self.state == "horizontal":
             top_buffer = self.left[1] - 32
             bottom_buffer = self.left[1] + 2.5
-
-            if top_buffer <= opponent_loc[1] <= bottom_buffer:
-                return True
+            if self.left[0] <= opponent_class.r and opponent_class.l <= self.right[0]:
+                # Coming from top
+                if opponent_class.direction == "down":
+                    if top_buffer <= opponent_class.b <= self.left[1]:
+                        return True
+                # Coming from bottom
+                if opponent_class.direction == "up":
+                    if self.left[1] <= opponent_class.y <= bottom_buffer:
+                        return True
 
         return False
 
@@ -151,18 +174,18 @@ class Wall:
         if self.state == "vertical":
             # If player on right, counter leftward movement
             if self.player_loc == "right":
-                player_class.x += 1
+                player_class.x += .3
             # If player on left, counter rightward movement
             elif self.player_loc == "left":
-                player_class.x -= 1
+                player_class.x -= .3
 
         # Horizontal wall. blocks up and down movement
         if self.state == "horizontal":
 
             if self.player_loc == "above":
-                player_class.y -= 1
+                player_class.y -= .3
             elif self.player_loc == "below":
-                player_class.y += 1
+                player_class.y += .3
 
     def bounce_opponent(self, opponent_class):
         # Vertical wall

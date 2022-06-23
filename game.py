@@ -23,8 +23,15 @@ destination = level.create_destination()
 
 # Create opponent classes. none on level 1
 opponents = None
+
+# Timer for swapping animations for opponent
+count = 0
+
 # Game loop
 while running:
+
+    # Mouse position
+    mouse_pos = pygame.mouse.get_pos()
 
     # Throw on background
     SCREEN.fill(background_colour)
@@ -39,6 +46,8 @@ while running:
         # Check for QUIT event
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(mouse_pos)
 
     # If arrow keys are pressed, move player
     keys = pygame.key.get_pressed()
@@ -61,38 +70,46 @@ while running:
 
         # Player interactions
         wall.locate_player((player.x, player.y))
-        if wall.detect_player_collision((player.x, player.y)):
+        if wall.detect_player_collision(player):
             wall.block_player(player)
 
         # Opponent interactions. if they exist on the current level
         if opponents is not None:
             for i in opponents.keys():
                 opp = opponents[i]
-                if wall.detect_opponent_collision((opp.x, opp.y)):
+
+                # Bounce off walls
+                if wall.detect_opponent_collision(opp):
                     wall.bounce_opponent(opp)
+
 
     # Conditional for advancing to next level, or resetting level.
     advance = False
 
     # Check for win
-    if destination.detect_player((player.x, player.y)):
+    if destination.detect_player(player):
         level.advance()
         opponents = level.create_opponents()
         advance = True
-    if advance:
-        player = level.create_player()
 
     # Loop through opponents and call functions
     if opponents is not None:
         for key in opponents.keys():
-            print(key)
             opp = opponents[key]
             # Move
             opp.move()
             # Update
-            opp.swap()
+            # if count % 120 == 0:
+            #     opp.swap()
+            # Check for player
+            if opp.detect_player(player):
+                advance = True
             opp.project(SCREEN)
+            count += 1
 
+    if advance:
+        print("ADVANCE")
+        player = level.create_player()
 
     # Update player class
     player.update(SCREEN)

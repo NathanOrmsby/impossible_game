@@ -49,6 +49,7 @@ class Level:
             d["4"] = Wall((250, 720), (250, 150))
             d["5"] = Wall((150, 0), (1280, 0))
             d["6"] = Wall((250, 150), (1030, 150))
+            d["7"] = Wall((1280, 0), (1280, 720))
 
         return d
 
@@ -59,8 +60,8 @@ class Level:
         d = {}
 
         if self.level == 2:
-            d["0"] = Opponent((1230, 50), "left")
-            d["1"] = Opponent((300, 100), "right")
+            d["0"] = Opponent((600, 25), "left")
+            d["1"] = Opponent((300, 75), "right")
 
         return d
 
@@ -92,4 +93,3 @@ class Level:
             time.sleep(10)
             pg.quit()
             sys.exit()
-
